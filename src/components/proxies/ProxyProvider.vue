@@ -12,6 +12,7 @@
         </div>
         <div class="flex items-center gap-1.5">
           <button
+            v-if="can('proxyProviderHealthCheck')"
             class="btn btn-circle btn-ghost btn-sm z-30"
             @click.stop="healthCheckClickHandler"
           >
@@ -25,7 +26,7 @@
             />
           </button>
           <button
-            v-if="proxyProvider.vehicleType !== 'Inline'"
+            v-if="proxyProvider.vehicleType !== 'Inline' && can('proxyProviderUpdate')"
             :class="
               twMerge('btn btn-circle btn-ghost btn-sm z-30', isUpdating ? 'animate-spin' : '')
             "
@@ -67,6 +68,7 @@
 </template>
 
 <script setup lang="ts">
+import { can } from '@/assembly/backend'
 import { proxyProviderHealthCheck, updateProxyProvider } from '@/assembly/proxies'
 import { useBounceOnVisible } from '@/composables/use-bounce-on-visible'
 import { useRenderProxyList } from '@/composables/use-render-proxy-list'

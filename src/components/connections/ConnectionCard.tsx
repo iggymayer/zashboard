@@ -1,3 +1,4 @@
+import { can } from '@/assembly/backend'
 import {
   blockConnectionById,
   disconnectById,
@@ -179,6 +180,8 @@ export default defineComponent<{
           </div>
         ),
         [CONNECTIONS_TABLE_ACCESSOR_KEY.Close]: () => {
+          if (!can('connectionsClose')) return <div></div>
+
           const closeButton = (
             <button
               class="btn btn-circle btn-xs"

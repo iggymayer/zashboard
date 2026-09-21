@@ -21,6 +21,7 @@ import {
   ArrowPathIcon,
   ArrowPathRoundedSquareIcon,
   ArrowUpCircleIcon,
+  DocumentTextIcon,
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/vue/24/outline'
@@ -39,6 +40,7 @@ export type BackendAction = {
 
 export const showUpgradeCoreModal = ref(false)
 export const showUpdateConfigModal = ref(false)
+export const showDaeConfigModal = ref(false)
 
 const reloadAll = () => {
   fetchConfigs()
@@ -162,23 +164,39 @@ export const backendActions = computed<BackendAction[]>(() => {
     })
   }
 
-  actions.push({
-    key: k.flushDNSCache,
-    label: 'flushDNSCache',
-    icon: TrashIcon,
-    running: isDNSCacheFlushing.value,
-    opensModal: false,
-    run: () => runOnce('flushDNSCache', isDNSCacheFlushing, flushDNSCache, 'flushDNSCacheSuccess'),
-  })
+  if (can('flushDNSCache')) {
+    actions.push({
+      key: k.flushDNSCache,
+      label: 'flushDNSCache',
+      icon: TrashIcon,
+      running: isDNSCacheFlushing.value,
+      opensModal: false,
+      run: () =>
+        runOnce('flushDNSCache', isDNSCacheFlushing, flushDNSCache, 'flushDNSCacheSuccess'),
+    })
+  }
 
-  actions.push({
-    key: k.flushFakeIP,
-    label: 'flushFakeIP',
-    icon: TrashIcon,
-    running: isFakeIPFlushing.value,
-    opensModal: false,
-    run: () => runOnce('flushFakeIP', isFakeIPFlushing, flushFakeIP, 'flushFakeIPSuccess'),
-  })
+  if (can('flushFakeIP')) {
+    actions.push({
+      key: k.flushFakeIP,
+      label: 'flushFakeIP',
+      icon: TrashIcon,
+      running: isFakeIPFlushing.value,
+      opensModal: false,
+      run: () => runOnce('flushFakeIP', isFakeIPFlushing, flushFakeIP, 'flushFakeIPSuccess'),
+    })
+  }
+
+  if (can('configSources')) {
+    actions.push({
+      key: k.daeConfigSources,
+      label: 'daeConfigSources',
+      icon: DocumentTextIcon,
+      running: false,
+      opensModal: true,
+      run: () => (showDaeConfigModal.value = true),
+    })
+  }
 
   if (hasSmartGroup.value) {
     actions.push({

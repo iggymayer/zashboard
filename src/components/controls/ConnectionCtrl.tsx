@@ -1,8 +1,10 @@
+import { can } from '@/assembly/backend'
 import { disconnectAll, disconnectById, isPaused } from '@/assembly/connections'
 import { useCtrlsBar } from '@/composables/use-ctrls-bar'
 import { useTooltip } from '@/composables/use-tooltip'
 import {
   CONNECTION_GROUPABLE_KEYS,
+  CONNECTION_TAB_TYPE,
   naturalSortDirection,
   ROUTE_NAME,
   SETTINGS_MENU_KEY,
@@ -24,10 +26,12 @@ import {
   connections,
   connectionSortDirection,
   connectionSortType,
+  connectionTabShow,
   quickFilterEnabled,
   quickFilterRegex,
   renderConnections,
   searchHiddenColumns,
+  sourceIPFilter,
 } from '@/store/connections'
 import { isConnectionCard } from '@/store/settings'
 import {
@@ -59,11 +63,25 @@ import SourceIPFilter from './SourceIPFilter.vue'
 const handlerClickCloseAll = () => {
   if (renderConnections.value.length === connections.value.length) {
     disconnectAll()
-  } else {
-    renderConnections.value.forEach((conn) => {
-      disconnectById(conn.id)
-    })
+    return
   }
+
+  const sourceIPs = sourceIPFilter.value
+
+  if (
+    can('connectionsFilterClose') &&
+    sourceIPs?.length === 1 &&
+    !connectionFilter.value &&
+    !quickFilterEnabled.value &&
+    connectionTabShow.value === CONNECTION_TAB_TYPE.ACTIVE
+  ) {
+    disconnectAll({ src: sourceIPs[0] })
+    return
+  }
+
+  renderConnections.value.forEach((conn) => {
+    disconnectById(conn.id)
+  })
 }
 
 export default defineComponent({
@@ -290,12 +308,14 @@ export default defineComponent({
           >
             {isPaused.value ? <PlayIcon class="h-4 w-4" /> : <PauseIcon class="h-4 w-4" />}
           </button>
-          <button
-            class="btn btn-circle btn-sm"
-            onClick={handlerClickCloseAll}
-          >
-            <XMarkIcon class="h-4 w-4" />
-          </button>
+          {can('connectionsClose') && (
+            <button
+              class="btn btn-circle btn-sm"
+              onClick={handlerClickCloseAll}
+            >
+              <XMarkIcon class="h-4 w-4" />
+            </button>
+          )}
         </>
       )
 

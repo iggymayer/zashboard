@@ -143,14 +143,26 @@
       </div>
     </template>
 
-    <template v-if="showDnsQuery">
+    <template v-if="showDaeRuntime">
+      <div class="settings-section-label">{{ $t('daeRuntime') }}</div>
+      <div class="settings-grid">
+        <SettingItem
+          :setting-key="k.daeRuntime"
+          class="py-3"
+        >
+          <DaeRuntimePanel />
+        </SettingItem>
+      </div>
+    </template>
+
+    <template v-if="showDnsDiagnostics">
       <div class="settings-section-label">{{ $t('settingsSectionDiagnostics') }}</div>
       <div class="settings-grid">
         <SettingItem
           :setting-key="k.DNSQuery"
           class="py-3"
         >
-          <DnsQuery />
+          <DnsDiagnostics />
         </SettingItem>
       </div>
     </template>
@@ -165,7 +177,8 @@ import BackendVersion from '@/components/common/BackendVersion.vue'
 import SelectInput, { type SelectOption } from '@/components/common/SelectInput.vue'
 import BackendPortsGrid from '@/components/settings/backend/BackendPortsGrid.vue'
 import BackendSwitch from '@/components/settings/backend/BackendSwitch.vue'
-import DnsQuery from '@/components/settings/backend/DnsQuery.vue'
+import DaeRuntimePanel from '@/components/dae/DaeRuntimePanel.vue'
+import DnsDiagnostics from '@/components/settings/backend/DnsDiagnostics.vue'
 import SettingItem from '@/components/settings/SettingItem.vue'
 import { backendActions } from '@/helper/backend-actions'
 import { useIsSettingVisible } from '@/composables/use-setting-visibility'
@@ -187,6 +200,7 @@ const isVisibleAllowLan = useIsSettingVisible(k.allowLan)
 const isVisibleCheckUpgrade = useIsSettingVisible(k.checkCoreUpgrade)
 const isVisibleAutoUpgrade = useIsSettingVisible(k.autoUpgradeCore)
 const isVisibleDnsQuery = useIsSettingVisible(k.DNSQuery)
+const isVisibleDaeRuntime = useIsSettingVisible(k.daeRuntime)
 const canShowTunMode = computed(
   () => isVisibleTunMode.value && !activeBackend.value?.disableTunMode,
 )
@@ -198,7 +212,15 @@ const canShowTunStack = computed(
 const hasVisibleActions = computed(() =>
   backendActions.value.some((action) => isSettingVisible(action.key)),
 )
-const showDnsQuery = isVisibleDnsQuery
+const showDaeRuntime = computed(
+  () =>
+    isVisibleDaeRuntime.value &&
+    activeBackend.value?.type === 'dae' &&
+    (can('runtimeSettings') || can('lifecycleControl') || can('datapath')),
+)
+const showDnsDiagnostics = computed(
+  () => isVisibleDnsQuery.value && (can('dnsQuery') || can('dnsCache') || can('dnsLog')),
+)
 const hasVisibleNetworkSettings = computed(
   () =>
     can('configPatch') &&
@@ -221,7 +243,8 @@ const hasVisibleItems = computed(
     hasVisibleActions.value ||
     hasVisibleNetworkSettings.value ||
     hasVisibleUpgradeSettings.value ||
-    showDnsQuery.value,
+    showDaeRuntime.value ||
+    showDnsDiagnostics.value,
 )
 
 const handlerCheckUpgradeCoreChange = () => {

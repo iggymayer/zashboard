@@ -39,8 +39,34 @@ export const uploadSpeedHistory = ref(makeInitValue())
 
 let cancel: (() => void) | undefined
 
+const toHistoryPoints = (samples: { at: number; value: number }[]): HistoryPoint[] =>
+  samples
+    .filter((sample) => Number.isFinite(sample.at))
+    .slice(-savedPoints)
+    .map((sample) => ({ name: sample.at, value: [sample.at, sample.value] as [number, number] }))
+
+const seedHistory = async () => {
+  const history = driver().metrics.history
+
+  if (!history || !can('metricsHistory')) return
+
+  try {
+    const samples = await history()
+    const download = toHistoryPoints(samples.download)
+
+    if (!download.length) return
+
+    downloadSpeedHistory.value = download
+    uploadSpeedHistory.value = toHistoryPoints(samples.upload)
+    memoryHistory.value = toHistoryPoints(samples.memory)
+    connectionsHistory.value = toHistoryPoints(samples.connections)
+  } catch {}
+}
+
 export const initSatistic = () => {
   stopSatistic()
+
+  seedHistory()
 
   const { data: memoryWsData, close: memoryWsClose } = memoryStream()
   const unwatchMemory = watch(

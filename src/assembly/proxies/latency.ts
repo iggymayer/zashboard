@@ -1,3 +1,4 @@
+import { can } from '@/assembly/backend'
 import { driver } from '@/assembly/driver'
 import { IPV6_TEST_URL, NOT_CONNECTED, PROXY_TYPE, SPEEDTEST_MODE } from '@/constant'
 import { isProxyGroup } from '@/helper'
@@ -57,6 +58,8 @@ export const proxyLatencyTest = async (
   url = speedtestUrlWithDefault.value,
   timeout = speedtestTimeout.value,
 ) => {
+  if (!can('latencyTest')) return
+
   try {
     await latencyTestForSingle(proxyName, url, timeout)
   } catch {
@@ -143,12 +146,15 @@ const testLatencyOneByOneWithTip = async (
 }
 
 export const proxyGroupLatencyTest = async (proxyGroupName: string) => {
+  if (!can('latencyTest')) return
+
   const proxyNode = proxyMap.value[proxyGroupName]
   const all = (proxyNode.all ?? []).filter(isLatencyTestable)
   const url = getTestUrl(proxyGroupName)
 
   if (
     speedtestMode.value === SPEEDTEST_MODE.DASHBOARD &&
+    can('nodeLatencyTest') &&
     [PROXY_TYPE.Selector, PROXY_TYPE.LoadBalance, PROXY_TYPE.Smart].includes(
       proxyNode.type.toLowerCase() as PROXY_TYPE,
     )
@@ -209,7 +215,9 @@ export const proxyGroupLatencyTest = async (proxyGroupName: string) => {
 }
 
 export const allProxiesLatencyTest = async () => {
-  if (independentLatencyTest.value) {
+  if (!can('latencyTest')) return
+
+  if (independentLatencyTest.value || !can('nodeLatencyTest')) {
     const limit = pLimit(3)
 
     return await Promise.all(

@@ -8,7 +8,7 @@ import { watchOnce } from '@vueuse/core'
 import dayjs from 'dayjs'
 import * as ipaddr from 'ipaddr.js'
 import { ref, shallowRef, watch } from 'vue'
-import { driver, type ConnectionAccessor } from './driver'
+import { driver, type ConnectionAccessor, type ConnectionsFilter } from './driver'
 
 export type ConnectionDisplayOptions = {
   mode: 'card' | 'table'
@@ -27,7 +27,8 @@ export const connectionAccessor = (): ConnectionAccessor => driver().connections
 
 export const disconnectById = (id: string) => driver().connections.disconnect(id)
 
-export const disconnectAll = () => driver().connections.disconnectAll()
+export const disconnectAll = (filter?: ConnectionsFilter) =>
+  driver().connections.disconnectAll(filter)
 
 export const blockConnectionById = (id: string) => driver().connections.block(id)
 
@@ -72,9 +73,17 @@ export const initConnections = () => {
 
     activeConnections.value = active
 
-    if (closed.length > 0) {
-      closedConnections.value = closedConnections.value.concat(closed).slice(-500)
-      closedBatch.value = closed
+    const known = new Set(closedConnections.value.map((connection) => connection.id))
+    const reported = (payload.closed ?? []).filter(
+      (connection) => !known.has(connection.id) && !currentMap.has(connection.id),
+    ) as Connection[]
+    const batch = closed.concat(
+      reported.filter((connection) => !closed.some((item) => item.id === connection.id)),
+    )
+
+    if (batch.length > 0) {
+      closedConnections.value = closedConnections.value.concat(batch).slice(-500)
+      closedBatch.value = batch
     }
   })
 

@@ -113,8 +113,10 @@ export const getBackendFromUrl = () => {
   )
 
   if (query.has('hostname')) {
+    const type = query.get('type') === 'dae' ? 'dae' : 'clash'
+
     return {
-      type: 'clash' as BackendType,
+      type: type as BackendType,
       protocol: getProtocolFromQuery(query),
       secondaryPath: query.get('secondaryPath') || '',
       host: query.get('hostname') as string,

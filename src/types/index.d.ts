@@ -1,4 +1,7 @@
-export type BackendType = 'clash'
+export * from './dae'
+import type { DaeConnectionRawMessage } from './dae'
+
+export type BackendType = 'clash' | 'dae'
 
 export type Backend = {
   type: BackendType
@@ -141,7 +144,7 @@ export type ClashConnectionRawMessage = {
   }
 }
 
-export type ConnectionRawMessage = ClashConnectionRawMessage
+export type ConnectionRawMessage = ClashConnectionRawMessage | DaeConnectionRawMessage
 
 export type Connection = ConnectionRawMessage & {
   downloadSpeed: number

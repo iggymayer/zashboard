@@ -20,7 +20,10 @@
         <DashboardSettings icon-only />
       </SettingItem>
       <LanguageSelect />
-      <SettingItem :setting-key="k.autoUpgradeDashboard">
+      <SettingItem
+        v-if="showDashboardUpgrade"
+        :setting-key="k.autoUpgradeDashboard"
+      >
         <div class="setting-item-label">{{ $t('autoUpgradeDashboard') }}</div>
         <input
           v-model="autoUpgradeDashboard"
@@ -245,7 +248,10 @@ const isVisibleShortcuts = useIsSettingVisible(k.keyboardShortcuts)
 const isVisibleDisplayAllFeatures = useIsSettingVisible(k.displayAllFeatures)
 
 const hasVisibleApplicationItems = computed(
-  () => isVisibleActions.value || isVisibleLanguage.value || isVisibleAutoUpgrade.value,
+  () =>
+    isVisibleActions.value ||
+    isVisibleLanguage.value ||
+    (showDashboardUpgrade.value && isVisibleAutoUpgrade.value),
 )
 const hasVisibleNetworkItems = computed(
   () =>

@@ -1,3 +1,4 @@
+import DaeLogo from '@/assets/images/dae.jpg'
 import HonkLogo from '@/assets/images/honk.svg'
 import MetacubexLogo from '@/assets/images/metacubex.jpg'
 import { MIHOMO, MIHOMO_CHANNEL } from '@/constant'
@@ -8,6 +9,7 @@ import { activeBackend } from '@/store/setup'
 import type { Backend } from '@/types'
 import { computed, nextTick, ref } from 'vue'
 import { can, core, Core, resetCore } from './backend'
+import { fetchCapabilities, resetCapabilities } from './capabilities'
 import { driver } from './driver'
 
 export const version = ref()
@@ -25,8 +27,9 @@ export type BackendProbe = {
 export const backendProbe = ref<BackendProbe | undefined>()
 
 const detectCore = (versionString: string): Core => {
-  if (!versionString) return Core.Unknown
   if (/\bhonk\b/i.test(versionString)) return Core.Honk
+  if (activeBackend.value?.type === 'dae') return Core.Dae
+  if (!versionString) return Core.Unknown
   return Core.Mihomo
 }
 
@@ -34,6 +37,8 @@ export const coreBrand = computed(() => {
   switch (core.value) {
     case Core.Honk:
       return { logo: HonkLogo, url: 'https://github.com/Glassyiris/honk' }
+    case Core.Dae:
+      return { logo: DaeLogo, url: 'https://github.com/daeuniverse/dae' }
     default:
       return {
         logo: MetacubexLogo,
@@ -87,6 +92,11 @@ const probeBackendVersion = async (backend: Backend) => {
 
   version.value = versionString
   core.value = detectCore(version.value)
+
+  if (backend.type === 'dae') {
+    await fetchCapabilities()
+  }
+
   backendProbe.value = {
     uuid: backend.uuid,
     status: 'connected',
@@ -114,6 +124,7 @@ export const probeActiveBackend = () => {
   const backend = activeBackend.value
 
   resetCore()
+  resetCapabilities()
   version.value = ''
   isCoreUpdateAvailable.value = false
   backendProbe.value = backend

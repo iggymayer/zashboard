@@ -87,6 +87,18 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
         section: 'settingsSectionCoreOperations',
       },
       {
+        key: `${SETTINGS_MENU_KEY.backend}.daeConfigSources`,
+        label: 'daeConfigSources',
+        section: 'settingsSectionCoreOperations',
+        keywords: ['dae', 'config'],
+      },
+      {
+        key: `${SETTINGS_MENU_KEY.backend}.daeRuntime`,
+        label: 'daeRuntime',
+        section: 'settingsSectionCoreOperations',
+        keywords: ['dae', 'runtime', 'log', 'suspend'],
+      },
+      {
         key: `${SETTINGS_MENU_KEY.backend}.dnsQuery`,
         label: 'DNSQuery',
         section: 'settingsSectionDiagnostics',

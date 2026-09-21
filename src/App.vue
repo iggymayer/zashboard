@@ -6,12 +6,17 @@ import { RouterView } from 'vue-router'
 import BackendConnectionError from './components/common/BackendConnectionError.vue'
 import BackendSwitchToast from './components/common/BackendSwitchToast.vue'
 import BackendManager from './components/settings/backend/BackendManager.vue'
+import DaeConfigModal from './components/settings/backend/DaeConfigModal.vue'
 import UpdateConfigModal from './components/settings/backend/UpdateConfigModal.vue'
 import UpgradeCoreModal from './components/settings/backend/UpgradeCoreModal.vue'
 import { useAppearanceVars } from './composables/use-appearance-vars'
 import { useOverscrollLock } from './composables/use-overscroll-lock'
 import { useThemeColor } from './composables/use-theme-color'
-import { showUpdateConfigModal, showUpgradeCoreModal } from '@/helper/backend-actions'
+import {
+  showDaeConfigModal,
+  showUpdateConfigModal,
+  showUpgradeCoreModal,
+} from '@/helper/backend-actions'
 import ConfirmDialogHost from './components/common/ConfirmDialogHost.vue'
 import { useKeyboard } from './composables/use-keyboard'
 import { EMOJIS, FONTS } from './constant'
@@ -133,6 +138,7 @@ useKeyboard()
     <BackendManager />
     <UpgradeCoreModal v-model="showUpgradeCoreModal" />
     <UpdateConfigModal v-model="showUpdateConfigModal" />
+    <DaeConfigModal v-model="showDaeConfigModal" />
     <ConfirmDialogHost />
     <div
       ref="toast"

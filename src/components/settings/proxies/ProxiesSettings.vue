@@ -5,7 +5,10 @@
         {{ $t('latency') }}
       </div>
       <div class="settings-grid">
-        <SettingItem :setting-key="k.speedtestMode">
+        <SettingItem
+          :setting-key="k.speedtestMode"
+          :when="can('customTestUrl')"
+        >
           <div class="setting-item-label">
             {{ $t('speedtestMode') }}
             <QuestionMarkCircleIcon
@@ -24,6 +27,7 @@
         </SettingItem>
         <SettingItem
           :setting-key="k.speedtestUrl"
+          :when="can('customTestUrl')"
           class="max-sm:flex-col max-sm:items-start! max-sm:py-3"
         >
           <div class="setting-item-label">
@@ -35,7 +39,10 @@
             :clearable="true"
           />
         </SettingItem>
-        <SettingItem :setting-key="k.speedtestTimeout">
+        <SettingItem
+          :setting-key="k.speedtestTimeout"
+          :when="can('customTestUrl')"
+        >
           <div class="setting-item-label">
             {{ $t('speedtestTimeout') }}
           </div>
@@ -204,6 +211,7 @@
 </template>
 
 <script setup lang="ts">
+import { can } from '@/assembly/backend'
 import SelectInput from '@/components/common/SelectInput.vue'
 import SettingItem from '@/components/settings/SettingItem.vue'
 import { useIsSettingVisible } from '@/composables/use-setting-visibility'

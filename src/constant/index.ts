@@ -134,6 +134,7 @@ export enum LIST_DISPLAY_STYLE {
 export enum RULE_TAB_TYPE {
   RULES = 'rules',
   PROVIDER = 'ruleProvider',
+  TRACE = 'daeRoutingTrace',
 }
 
 export enum PROXY_TAB_TYPE {

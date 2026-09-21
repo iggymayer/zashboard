@@ -46,6 +46,9 @@ importers:
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
+      eventsource-parser:
+        specifier: ^4.1.0
+        version: 4.1.0
       ipaddr.js:
         specifier: ^2.4.0
         version: 2.4.0
@@ -3173,6 +3176,13 @@ packages:
         integrity: sha512-lW6is4T1NFOYnmqGZIfvixqj7A7sSvScF+DN8EK6K58xI5MZ5UvYe0GjopxOXQtZvUn4eDdVuZ8XSoYWTMEKwA==,
       }
     engines: { node: '>=20' }
+
+  eventsource-parser@4.1.0:
+    resolution:
+      {
+        integrity: sha512-+DHvQ1wLO//MK+1OZgcuXCbZFKgu3YjKPJt7n98rxX8vezL0ni+7s3ZQiM8bJkUEOk7MsuCycrPLj0FzUNf7Og==,
+      }
+    engines: { node: '>=22.12' }
 
   exsolve@1.1.1:
     resolution:
@@ -7593,6 +7603,8 @@ snapshots:
   esutils@2.0.3: {}
 
   eta@4.6.0: {}
+
+  eventsource-parser@4.1.0: {}
 
   exsolve@1.1.1: {}
 

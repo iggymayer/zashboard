@@ -1,9 +1,21 @@
 import axios from 'axios'
 import { showNotification } from './notification'
 
+type BackendErrorBody = {
+  message?: string
+  error?: { code?: string; message?: string }
+}
+
 export const getRequestErrorMessage = (error: unknown): string => {
-  if (axios.isAxiosError<{ message?: string }>(error)) {
-    return error.response?.data?.message || error.message
+  if (axios.isAxiosError<BackendErrorBody>(error)) {
+    const data = error.response?.data
+    const nested = data?.error
+
+    if (nested?.message) {
+      return nested.code ? `${nested.message} (${nested.code})` : nested.message
+    }
+
+    return data?.message || error.message
   }
 
   if (error instanceof Error) {
